@@ -10,3 +10,5 @@ import './../node_modules/bootstrap/dist/css/bootstrap.min.css';
 //import './basesProgramacionAsincrona/callback';
 
 import './Practica-Callbacks/practicaCallbacks';
+
+//import './basesProgramacionAsincrona/promesas';

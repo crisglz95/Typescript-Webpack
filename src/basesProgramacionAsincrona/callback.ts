@@ -141,34 +141,64 @@ function MostrarUsuarios(error: string | null, respuesta: boolean) {
 
 let getEmpleado = (id: number, callback: Function) => {
   let empleadoDB = Personas.find((persona) => persona.id === id);
-  if(!empleadoDB){
-      callback(`No existe un empleado con el id ${id}`);
-  }else{
-      callback(null, empleadoDB);
+  if (!empleadoDB) {
+    callback(`No existe un empleado con el id ${id}`);
+  } else {
+    callback(null, empleadoDB);
   }
 };
 
 let getSalario = (empleado: Persona, callback: Function) => {
   let salarioDB = Salario.find((salario) => salario.id === empleado.id);
-  if(!salarioDB){
-      callback(`El empleado ${empleado.nombre} no tiene salario asignado`);
-  }else{
-      callback(null, {
-          nombre: empleado.nombre, 
-          salario: salarioDB.salario
-      });
+  if (!salarioDB) {
+    callback(`El empleado ${empleado.nombre} no tiene salario asignado`);
+  } else {
+    callback(null, {
+      nombre: empleado.nombre,
+      salario: salarioDB.salario,
+    });
   }
 };
 
 getEmpleado(4, (err: string | null, empleado: Persona) => {
   if (err) {
-      return console.error(err);
+    return console.error(err);
   }
 
-  getSalario(empleado, (err: null | string, res: any)=>{
-    if(err){
-        return console.error(err);
+  getSalario(empleado, (err: null | string, res: any) => {
+    if (err) {
+      return console.error(err);
     }
     console.info(`El salario de ${res.nombre} es de $${res.salario}`);
-  })
+  });
 });
+
+/******************Callbacks Asincrono********************
+
+*********************************************************/
+
+function segundaFuncion() {
+  console.log("Se ejecuta segunda funcion");
+}
+
+function getEmpleadoAsincrono(id: number, callback: Function) {
+  setTimeout(() => {
+    const Empleado = Personas.find((persona) => persona.id === id);
+
+    if (!Empleado) {
+      callback("No existe empleado con el id");
+    } else {
+      callback(null, Empleado);
+    }
+  }, 2000);
+}
+
+getEmpleadoAsincrono(2, (error: string | null, empleado: Persona) => {
+  if (error) {
+    console.error(error);
+  }
+
+  console.log(empleado);
+});
+
+segundaFuncion();

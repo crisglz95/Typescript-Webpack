@@ -82,84 +82,160 @@ const CentroEstudios: Array<CentroEstudios> = [
   },
 ];
 
-let getAlumno = (id: number, callback: Function) => {
-	let alumnoDB = Alumnos.find((alumno) => alumno.id === id);
-	if(!alumnoDB){
-		callback(`No existe el alumno con id ${id}`);
-	}else{
-		callback(null, alumnoDB);
-	}
+interface resCarrera{
+  idCentroEstudios: number | undefined;
+  nombre: string; 
+  carrera: string | undefined;
+}
+
+const getAlumno = (id: number): Promise<Alumnos> => {
+  return new Promise((resolve, reject) => {
+    const Alumno = Alumnos.find((alumno) => alumno.id === id);
+    if(!Alumno){
+      reject(`El id ${id} no tiene alumno asignado`);
+    }
+    resolve(Alumno);
+  });
 };
 
-let getCarrera = (alumno: Alumnos, callback: Function) => {
-	let carreraDB = Carrera.find((carrera) => carrera.idCarrera === alumno.idCarrera);
-	if(!carreraDB){
-		callback(`El alumno ${alumno.Nombre} no tiene carrera asignada`);
-	}else{
-		callback(null, {
-      idCentroEstudios: carreraDB.idCentroEstudios,
-			nombre: alumno.Nombre, 
-			carrera: carreraDB.carrera
-		});
-	}
-}
-
-let getCentroEstudios = (carrera: Carrera, callback: Function) => {
-  let centroDB = CentroEstudios.find((centro) => centro.id === carrera.idCentroEstudios);
-	if(!centroDB){
-		callback(`La carrera ${carrera.carrera} no tiene centro de estudios asignado`);
-	}else{
-		callback(null, {
-			carrera: carrera.carrera,
-			centro: centroDB.Nombre
-		})
-	}
-}
-
-
-getAlumno(2, (err: string | null, alumno: Alumnos) => {
-	if(err){
-		return console.error(err);
-	}
-	getCarrera(alumno, (err: null | string, res: any) => {
-		if(err){
-			return console.error(err);
-		}
-		console.info(`La carrera del Alumno ${res.nombre} es ${res.carrera}`);
-	});
-
-});
-
-getAlumno(1, (err: string | null, alumno: Alumnos) => {
-  if(err){
-    return console.error(err);
-  }
-  getCarrera(alumno, (err: null | string, carrera: Carrera) => {
-    if(err){
-      return console.error(err);
+const getCarrera = (alumno: Alumnos): Promise<resCarrera> =>{
+  return new Promise((resolve, reject) => {
+    const CarreraDB = Carrera.find((carrera) => carrera.idCarrera === alumno.idCarrera);
+    if(!CarreraDB){
+      reject(`El alumno ${alumno.Nombre} no tiene carrera asignada`);
     }
-    getCentroEstudios(carrera, (err: string | null, res: any) => {
-      if(err){
-        return console.error(err);
-      }
-      console.info(`La carrera ${carrera.carrera} pertenece al centro de estudios de ${res.centro}`);
+    resolve({
+      idCentroEstudios: CarreraDB?.idCentroEstudios,
+      nombre: alumno.Nombre, 
+      carrera: CarreraDB?.carrera
+    })
+  });
+};
+
+const getCentroEstudios = (carrera: resCarrera): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    const centroDB = CentroEstudios.find((centro) => centro.id === carrera.idCentroEstudios);
+    if(!centroDB){
+      reject(`La carrera ${carrera.carrera} no tiene centro de estudios asignado`);
+    }
+    resolve({
+      carrera: carrera.carrera, 
+      centro: centroDB?.Nombre,
+      alumno: carrera.nombre
     });
   });
-});
+};
 
-getAlumno(4, (err: string | null, alumno: Alumnos) => {
-  if(err){
-    return console.error(err);
-  }
-  getCarrera(alumno, (err: null | string, carrera: Carrera) => {
-    if(err){
-      return console.error(err);
-    }
-    getCentroEstudios(carrera, (err: string | null, res: any) => {
-      if(err){
-        return console.error(err);
-      }
-      console.info(`El alumno ${alumno.Nombre} de la carrera ${carrera.carrera} pertenece al centro de estudios de ${res.centro}`);
-    });
-  });
-});
+getAlumno(2)
+.then((resolve: Alumnos) => {
+    getCarrera(resolve)
+    .then((resolve) => console.log(`La carrera del alumno ${resolve.nombre} es ${resolve.carrera}`))
+    .catch((error: string) => console.log(error));
+})
+.catch((error: string) => console.log(error));
+
+getAlumno(1)
+.then((resolve: Alumnos) => {
+  getCarrera(resolve)
+  .then((resolve: resCarrera) => {
+    getCentroEstudios(resolve)
+    .then((resolve) => console.log(`La carrera ${resolve.carrera} pertenece al centro de estudios ${resolve.centro}`))
+    .catch((error: string) => console.log(error))
+  })
+  .catch((error: string) => console.log(error));
+})
+.catch((error: string) => console.log(error));
+
+getAlumno(4)
+.then((resolve: Alumnos) => {
+  getCarrera(resolve)
+  .then((resolve: resCarrera) => {
+    getCentroEstudios(resolve)
+    .then((resolve) => console.log(`El Alumno ${resolve.alumno} de la carrera ${resolve.carrera} pertenece al centro de estudios ${resolve.centro}`))
+    .catch((error: string) => console.log(error))
+  })
+  .catch((error: string) => console.log(error));
+})
+.catch((error: string) => console.log(error));
+
+// let getAlumno = (id: number, callback: Function) => {
+// 	let alumnoDB = Alumnos.find((alumno) => alumno.id === id);
+// 	if(!alumnoDB){
+// 		callback(`No existe el alumno con id ${id}`);
+// 	}else{
+// 		callback(null, alumnoDB);
+// 	}
+// };
+
+// let getCarrera = (alumno: Alumnos, callback: Function) => {
+// 	let carreraDB = Carrera.find((carrera) => carrera.idCarrera === alumno.idCarrera);
+// 	if(!carreraDB){
+// 		callback(`El alumno ${alumno.Nombre} no tiene carrera asignada`);
+// 	}else{
+// 		callback(null, {
+//       idCentroEstudios: carreraDB.idCentroEstudios,
+// 			nombre: alumno.Nombre, 
+// 			carrera: carreraDB.carrera
+// 		});
+// 	}
+// }
+
+// let getCentroEstudios = (carrera: Carrera, callback: Function) => {
+//   let centroDB = CentroEstudios.find((centro) => centro.id === carrera.idCentroEstudios);
+// 	if(!centroDB){
+// 		callback(`La carrera ${carrera.carrera} no tiene centro de estudios asignado`);
+// 	}else{
+// 		callback(null, {
+// 			carrera: carrera.carrera,
+// 			centro: centroDB.Nombre
+// 		})
+// 	}
+// }
+
+
+// getAlumno(2, (err: string | null, alumno: Alumnos) => {
+// 	if(err){
+// 		return console.error(err);
+// 	}
+// 	getCarrera(alumno, (err: null | string, res: any) => {
+// 		if(err){
+// 			return console.error(err);
+// 		}
+// 		console.info(`La carrera del Alumno ${res.nombre} es ${res.carrera}`);
+// 	});
+
+// });
+
+// getAlumno(1, (err: string | null, alumno: Alumnos) => {
+//   if(err){
+//     return console.error(err);
+//   }
+//   getCarrera(alumno, (err: null | string, carrera: Carrera) => {
+//     if(err){
+//       return console.error(err);
+//     }
+//     getCentroEstudios(carrera, (err: string | null, res: any) => {
+//       if(err){
+//         return console.error(err);
+//       }
+//       console.info(`La carrera ${carrera.carrera} pertenece al centro de estudios de ${res.centro}`);
+//     });
+//   });
+// });
+
+// getAlumno(4, (err: string | null, alumno: Alumnos) => {
+//   if(err){
+//     return console.error(err);
+//   }
+//   getCarrera(alumno, (err: null | string, carrera: Carrera) => {
+//     if(err){
+//       return console.error(err);
+//     }
+//     getCentroEstudios(carrera, (err: string | null, res: any) => {
+//       if(err){
+//         return console.error(err);
+//       }
+//       console.info(`El alumno ${alumno.Nombre} de la carrera ${carrera.carrera} pertenece al centro de estudios de ${res.centro}`);
+//     });
+//   });
+// });
