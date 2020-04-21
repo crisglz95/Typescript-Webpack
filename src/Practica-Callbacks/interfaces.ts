@@ -15,8 +15,15 @@ interface CentroEstudios{
     Nombre: string
 }
 
+interface resCarrera{
+    idCentroEstudios: number | undefined;
+    nombre: string; 
+    carrera: string | undefined;
+}
+
 export {
     Alumnos, 
     Carrera,
-    CentroEstudios
+    CentroEstudios, 
+    resCarrera
 }

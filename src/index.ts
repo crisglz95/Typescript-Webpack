@@ -9,6 +9,10 @@ import './../node_modules/bootstrap/dist/css/bootstrap.min.css';
 
 //import './basesProgramacionAsincrona/callback';
 
-import './Practica-Callbacks/practicaCallbacks';
+//import './Practica-Callbacks/practicaCallbacks';
 
 //import './basesProgramacionAsincrona/promesas';
+
+//import './basesProgramacionAsincrona/async-await';
+
+import './Practica-Callbacks/async-await';

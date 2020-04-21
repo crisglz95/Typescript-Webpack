@@ -5,3 +5,7 @@ export interface Persona{
     sexo: string
 }
 
+export interface Salario{
+    id: number, 
+    salario: number
+}
